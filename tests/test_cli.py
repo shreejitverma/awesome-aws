@@ -23,7 +23,7 @@ class CliTest(unittest.TestCase):
         """
         Make sure haxor is in installed packages.
         """
-        dists = set([di.key for di in pip.get_installed_distributions()])
+        dists = {di.key for di in pip.get_installed_distributions()}
         assert 'haxor' in dists
 
     def step_run_cli(self):

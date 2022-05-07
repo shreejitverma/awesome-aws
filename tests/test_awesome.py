@@ -41,8 +41,7 @@ class AwesomeTest(unittest.TestCase):
         self.awesome.rock_it(README, README_RESULT)
         result = []
         with open(README_RESULT, 'r') as f:
-            for line in f:
-                result.append(line)
+            result.extend(iter(f))
         assert result == readme_expected
         assert mock.call.secho('Broken repos:', fg='red') \
             in mock_click.mock_calls
@@ -50,5 +49,7 @@ class AwesomeTest(unittest.TestCase):
             in mock_click.mock_calls
         assert mock.call.secho('Rate limit: 9000', fg='blue') \
             in mock_click.mock_calls
-        assert mock.call.secho('Updated ' + README_RESULT, fg='blue') \
+        assert (
+            mock.call.secho(f'Updated {README_RESULT}', fg='blue')
             in mock_click.mock_calls
+        )

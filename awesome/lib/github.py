@@ -88,8 +88,7 @@ class GitHub(object):
             A string that represents the github config file path.
         """
         home = os.path.abspath(os.environ.get('HOME', ''))
-        config_file_path = os.path.join(home, config_file_name)
-        return config_file_path
+        return os.path.join(home, config_file_name)
 
     def _login(self):
         """Logs into GitHub.

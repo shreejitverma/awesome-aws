@@ -32,7 +32,7 @@ class Awesome(object):
     """
 
     def __init__(self, github=None):
-        self.github = github if github else GitHub()
+        self.github = github or GitHub()
         self.output = []
         self.repos_broken = []
         self.repos_exclude_score = [
@@ -63,7 +63,7 @@ class Awesome(object):
         if self.repos_broken:
             click.secho('Broken repos:', fg='red')
             for repo in self.repos_broken:
-                click.secho('  ' + repo, fg='red')
+                click.secho(f'  {repo}', fg='red')
 
     def process_line(self, line):
         """Processes each line in the README.
@@ -77,14 +77,14 @@ class Awesome(object):
             self.output.append(line)
             return
         # If the repo is in the score exclude list, just output the line
-        if any(substr in match.group(0) for substr in self.repos_exclude_score):
+        if any(substr in match[0] for substr in self.repos_exclude_score):
             self.output.append(line)
             return
-        user_login, repo_name = self.extract_repo_params(match.group(0))
+        user_login, repo_name = self.extract_repo_params(match[0])
         repo = self.github.api.repository(user_login, repo_name)
         # Tag any broken repos
         if type(repo) is null.NullObject:
-            self.repos_broken.append(match.group(0))
+            self.repos_broken.append(match[0])
             return
         line = self.update_repo_score(repo, line)
         self.output.append(line)
@@ -106,9 +106,11 @@ class Awesome(object):
             result_path = readme_path
         self.write_output(result_path)
         self.print_repos_broken()
-        click.secho('Rate limit: ' + str(self.github.api.ratelimit_remaining),
-                    fg='blue')
-        click.secho('Updated ' + result_path, fg='blue')
+        click.secho(
+            f'Rate limit: {str(self.github.api.ratelimit_remaining)}', fg='blue'
+        )
+
+        click.secho(f'Updated {result_path}', fg='blue')
 
     def score_repo(self, stars, cached_score):
         """Assigns the Fiery Meter of AWSome score.
@@ -147,12 +149,10 @@ class Awesome(object):
         cached_score = line.count(':fire:')
         score = self.score_repo(stars, cached_score)
         if score != cached_score:
-            prefix = ''
-            if cached_score == 0:
-                prefix = ' '
+            prefix = ' ' if cached_score == 0 else ''
             cached_fires = ':fire:' * cached_score
             fires = ':fire:' * score
-            line = line.replace(cached_fires + ']', prefix + fires + ']')
+            line = line.replace(f'{cached_fires}]', prefix + fires + ']')
         return line
 
     def write_output(self, result_path):

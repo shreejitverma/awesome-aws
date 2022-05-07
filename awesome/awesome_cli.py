@@ -19,7 +19,7 @@ class AwesomeCli(object):
 
     @click.group()
     @click.pass_context
-    def cli(ctx):
+    def cli(self):
         """Main entry point for AwesomeCli.
 
         :type ctx: :class:`click.core.Context`
@@ -28,12 +28,12 @@ class AwesomeCli(object):
         # Create a GitHub object and remember it as as the context object.
         # From this point onwards other commands can refer to it by using the
         # @pass_github decorator.
-        ctx.obj = Awesome()
+        self.obj = Awesome()
 
     @cli.command()
     @click.argument('readme_path')
     @pass_awesome
-    def rock_it(awesome, readme_path):
+    def rock_it(self, readme_path):
         """Updates the README.
 
         :type awesome: :class:`Awesome`
@@ -42,4 +42,4 @@ class AwesomeCli(object):
         :type readme_path: str
         :param readme_path: The README path
         """
-        awesome.rock_it(readme_path)
+        self.rock_it(readme_path)
